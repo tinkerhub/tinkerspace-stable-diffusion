@@ -9,6 +9,7 @@ export default function Home() {
     return (
         <div style={{ display: "flex", flexDirection: "row" }}>
             <div style={{ flex: 4 }} className="p-4">
+                <img src="/logo.png" alt=""  className='m-4 ml-2'/>
                 <Sidebar />
                 <img src="/qr.png" alt="" style={{
                     position: "absolute",
@@ -24,9 +25,8 @@ export default function Home() {
                     
                 }}>
                     <div className='bg-black flex-grow' style={{
-                        position: "absolute",
-                        // width: "100%",
-                        bottom: 1,
+                        width: "100%",
+                        bottom: 10,
                     }}>
                         <p className='text-white'>{latestItem?.text}</p>
                     </div>

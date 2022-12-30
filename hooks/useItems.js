@@ -9,7 +9,7 @@ export function useItems() {
     const latestRef = query(
         ref(database, '_queue'),
         orderByChild('completed_at'),
-        limitToLast(4)
+        limitToLast(8)
     );
     const [snapshots, loading, error] = useList(latestRef);
     const [items, setItems] = React.useState([]);
@@ -25,6 +25,7 @@ export function useItems() {
     }, [loading, error, snapshots]);
     return [items, loading, error];
 }
+
 export function useLatestItem() {
     // Get records that has a value for completed_at and sort descending
     const latestRef = query(
