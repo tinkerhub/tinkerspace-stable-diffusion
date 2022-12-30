@@ -21,7 +21,8 @@ export function useItems() {
             console.error(error);
             return;
         }
-        setItems(snapshots.map((v) => v.val()));
+        const newItems = snapshots.map((v) => v.val());
+        setItems(newItems.reverse());
     }, [loading, error, snapshots]);
     return [items, loading, error];
 }
