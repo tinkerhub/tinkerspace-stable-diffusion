@@ -8,7 +8,7 @@ export default function RecentImages() {
             <h1>Recent Images</h1>
             {
                 loading ? <p>Loading...</p> : error ? <p>Error</p> : items.map((item, index) => {
-                    return <img className='m-2' src={item.url} alt="image description" />
+                    return <img className='m-2 mr-2' src={item.url} alt="image description" />
                 })
             }
 
