@@ -25,8 +25,10 @@ export function useLatestItem() {
     const latestRef = query(
         ref(database, '_queue'), 
         orderByChild('timestamp'),
-        limitToLast(1),
-        // equalTo('processes', 'status')
+        // limitToLast(1),
+        // equalTo("processed", 'status')
+        // orderByChild('status'),
+        // equalTo('processed')
         // where('status','==','processed')
     );
     // const topUserPostsRef = query(ref(db, 'user-posts/' + myUserId), orderByChild('starCount'));
@@ -41,11 +43,12 @@ export function useLatestItem() {
             console.error(error);
             return;
         }
-        console.log(snapshots, 'snapshots');
+        
         snapshots && setItem(snapshots[0]?.val());
         // setItem(snapshots.map((v) => v.val().text));
     }
         , [loading, error, snapshots]);
+        console.log(item,'itemitemitem');
     return [item, loading, error];
 
 }
