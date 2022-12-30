@@ -21,15 +21,11 @@ export function useItems() {
     return [items, loading, error];
 }
 export function useLatestItem() {
-    // get the latest item with status processed
+    // Get records that has a value for completed_at and sort descending
     const latestRef = query(
-        ref(database, '_queue'), 
-        orderByChild('timestamp'),
-        // limitToLast(1),
-        // equalTo("processed", 'status')
-        // orderByChild('status'),
-        // equalTo('processed')
-        // where('status','==','processed')
+        ref(database, '_queue'),
+        orderByChild('completed_at'),
+        limitToLast(1)
     );
     // const topUserPostsRef = query(ref(db, 'user-posts/' + myUserId), orderByChild('starCount'));
 
