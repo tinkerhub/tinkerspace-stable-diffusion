@@ -10,6 +10,11 @@ export default function Home() {
         <div style={{ display: "flex", flexDirection: "row" }}>
             <div style={{ flex: 4 }} className="p-4">
                 <Sidebar />
+                <img src="/qr.png" alt="" style={{
+                    position: "absolute",
+                    bottom: 0,
+                    width: "300px"
+                }} />
             </div>
             <div style={{ flex: 9, backgroundColor: "gray", display: "flex", alignItems: "center", flexDirection: "column" }}>
                 <img src={latestItem?.url}

@@ -6,7 +6,12 @@ import React from 'react'
 
 const database = getDatabase(firebaseApp);
 export function useItems() {
-    const [snapshots, loading, error] = useList(ref(database, '_queue'));
+    const latestRef = query(
+        ref(database, '_queue'),
+        orderByChild('completed_at'),
+        limitToLast(4)
+    );
+    const [snapshots, loading, error] = useList(latestRef);
     const [items, setItems] = React.useState([]);
     React.useEffect(() => {
         if (loading) {
