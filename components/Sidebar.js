@@ -10,7 +10,7 @@ export default function Sidebar() {
       <img src='/logo.png' alt='' className='w-5/6' />
 
       <div>
-        <h1 className='text-xl font-semibold text-[#212121]'>Imagination Queue</h1>
+        <h1 className='text-xl mt-5 font-semibold text-[#212121]'>Imagination Queue</h1>
         {loading && <p className='mt-6 text-lg'>Loading ...</p>}
         {error && <p className='mt-6 text-lg'>Error</p>}
         {items &&
@@ -20,7 +20,7 @@ export default function Sidebar() {
               <div key={idx} className='mt-6'>
                 
                 {/* <h2 className='text-lg font-bold text-[#212121]'>PSBots</h2> */}
-                <p className='mt-3 text-[#212121] opacity-80 text-base'>{item.text}</p>
+                <p className='mt-3 text-[#212121] opacity-80 text-base'>{ item.text.length < 125 ? item.text : item.text.substr(0, 125) + "..."  }</p>
                 <p className="mt-1 text-xs text-gray-500">Created {dayjs(item.timestamp).fromNow()}</p>
                 <div className='mt-3 flex items-center rounded-full py-1 px-3 border-2 w-fit border-[#828282]'>
                   <div
@@ -31,10 +31,10 @@ export default function Sidebar() {
                     } ${
                       (item.status == 'pending' ||
                         item.status === 'processing') &&
-                      'bg-orange-400'
-                    }   rounded-full w-3 h-3`}
+                      'bg-orange-400 animate-ping'
+                    }  rounded-full w-2 h-2`}
                   />
-                  <h2 className='ml-2 text-[#333333] font-medium'>
+                  <h2 className='ml-2 text-[#333333] text-xs'>
                     {item.status[0].toUpperCase() + item.status.slice(1)}
                   </h2>
                 </div>
