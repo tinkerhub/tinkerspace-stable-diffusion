@@ -1,8 +1,25 @@
 import { useRecentQueue } from '@hooks/index';
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
+import { useEffect, useState } from 'react';
 // var relativeTime = require('')
 dayjs.extend(relativeTime)
+function CreatedTime({
+  timestamp
+}) {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCount(count + 1);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [count]);
+
+  return <p className="mt-1 text-xs text-gray-500">Created {dayjs(timestamp).fromNow()}</p>
+}
+
 export default function Sidebar() {
   const [items, loading, error] = useRecentQueue();
   return (
@@ -21,7 +38,7 @@ export default function Sidebar() {
                 
                 {/* <h2 className='text-lg font-bold text-[#212121]'>PSBots</h2> */}
                 <p className='mt-3 text-[#212121] opacity-80 text-base'>{ item.text.length < 125 ? item.text : item.text.substr(0, 125) + "..."  }</p>
-                <p className="mt-1 text-xs text-gray-500">Created {dayjs(item.timestamp).fromNow()}</p>
+                <CreatedTime timestamp={item.timestamp} />
                 <div className='mt-3 flex items-center rounded-full py-1 px-3 border-2 w-fit border-[#828282]'>
                   <div
                     className={`${
