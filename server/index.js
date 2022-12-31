@@ -32,16 +32,13 @@ ref.orderByChild("status")
     });
 
 async function moveToProcessed(newEntry,url){
-    newEntry.ref.update({
+    await newEntry.ref.update({
         status: "processed",
         url,
         completed_at: admin.database.ServerValue.TIMESTAMP
-    }, error => {
-        if(!error){
-            // Fetching the updated values to get the completed_at (This is the current server time)
-            updateExpiryAt(newEntry.ref.once('value'))
-        }   
     })
+    const snapshot = await newEntry.ref.once('value')
+    updateExpiryAt(snapshot)
 }
 
 async function updateExpiryAt(newEntry) {

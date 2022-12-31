@@ -1,6 +1,6 @@
-import { ref, orderByChild, limitToLast, query, equalTo } from 'firebase/database';
+import { ref, orderByChild, limitToLast, query, equalTo, startAt, limitToFirst, onValue, get } from 'firebase/database';
 import { useList, useListVals } from 'react-firebase-hooks/database';
-import React, { use, useEffect,useState } from 'react'
+import React, { use, useEffect, useState } from 'react'
 import { queueRef } from '@lib/firebase';
 
 export function useItems({
@@ -49,17 +49,43 @@ export function useRecentQueue() {
 }
 
 export function useLatestItem() {
-    const [
-        items,
-        loading,
-        error,
-    ] = useItems({ limit: 1 });
-    const [item, setItem] = useState(null);
-    useEffect(() => {
-        if (items.length > 0) {
-            setItem(items[0]);
+    const [item, setItem] = React.useState(null);
+    async function sync(params) {
+        const latestRef = query(
+            queueRef,
+            orderByChild('expiry_at'),
+            startAt(new Date().getTime()),
+            limitToFirst(1)
+        );
+
+        const snapshot = await get(latestRef);
+        const data = snapshot.val();
+        if (data != null)
+           { setItem(Object.values(data)[0])}
+        else {
+            const lastItemRef = query(
+                queueRef,
+                orderByChild('expiry_at'),
+                limitToLast(1)
+            );
+    
+            const lastItemsnapshot = await get(lastItemRef);
+            const lastItemdata = lastItemsnapshot.val();
+            if (lastItemdata != null)
+            { setItem(Object.values(lastItemdata)[0])}
         }
-    }, [items]);
-    return [item, loading, error];
+    }
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            // setCount(count + 1);
+            sync();
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, []);
+
+    const loading = item == null;
+    return [item, loading];
 
 }
