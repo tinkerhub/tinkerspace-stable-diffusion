@@ -7,6 +7,7 @@ var serviceAccount = require("./service-account.json");
 
 const apiKey = "75ee3281-c789-4052-81a0-3362fd2d5aae";
 const modelKey = "45f73f92-132a-4fb3-ae91-4fb535610f02";
+const TIME_TO_SHOW_AN_IMAGE_MS = 15 * 1000;
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
@@ -26,13 +27,45 @@ ref.orderByChild("status")
         snapshot.forEach(async function (childSnapshot) {
             childSnapshot.ref.update({ status: "processing" });
             const url = await generateImage(childSnapshot.val().text);
-            childSnapshot.ref.update({
-                status: "processed",
-                url,
-                completed_at: admin.database.ServerValue.TIMESTAMP,
-            });
+            moveToProcessed(childSnapshot,url)
         });
     });
+
+async function moveToProcessed(newEntry,url){
+    newEntry.ref.update({
+        status: "processed",
+        url,
+        completed_at: admin.database.ServerValue.TIMESTAMP
+    }, error => {
+        if(!error){
+            // Fetching the updated values to get the completed_at (This is the current server time)
+            updateExpiryAt(newEntry.ref.once('value'))
+        }   
+    })
+}
+
+async function updateExpiryAt(newEntry) {
+    const newEntryCompletedTime = newEntry.val().completed_at;
+  
+    const snapshot = await ref.orderByChild("expiry_at")
+      .startAt(newEntryCompletedTime)
+      .limitToLast(1)
+      .once('value');
+  
+    if (!snapshot.exists()) {
+      await newEntry.ref.update({
+        expiry_at: newEntryCompletedTime + TIME_TO_SHOW_AN_IMAGE_MS
+      });
+      return;
+    }
+  
+    snapshot.forEach(async function (childSnapshot) {
+      const latestExpiryAt = childSnapshot.val().expiry_at;
+      await newEntry.ref.update({
+        expiry_at: latestExpiryAt + TIME_TO_SHOW_AN_IMAGE_MS
+      });
+    });
+  }
 
 async function generateImage(prompt) {
     const modelParameters = {
