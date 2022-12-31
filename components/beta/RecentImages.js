@@ -10,14 +10,24 @@ export default function RecentImages() {
       {loading && <p className='mt-5 text-lg'>Loading ...</p>}
       {error && <p className='mt-5 text-lg'>Error</p>}
       {items &&
-        items.map((item, idx) => (
-          <img
-            key={idx}
-            src={item?.url}
-            className='mt-5 w-full'
-            alt={item?.text}
-          />
-        ))}
+        items.map((item, idx) => {
+          if (item.status !== 'processed') {
+            return null;
+          }
+
+          if (idx === 0) {
+            return null;
+          }
+
+          return (
+            <img
+              key={idx}
+              src={item?.url}
+              className='mt-5 w-full'
+              alt={item?.text}
+            />
+          )
+        })}
     </div>
   );
 }

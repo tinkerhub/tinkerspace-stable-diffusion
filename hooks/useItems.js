@@ -8,8 +8,8 @@ const database = getDatabase(firebaseApp);
 export function useItems() {
     const latestRef = query(
         ref(database, '_queue'),
-        orderByChild('completed_at'),
-        limitToLast(8)
+        orderByChild('timestamp'),
+        limitToLast(6)
     );
     const [snapshots, loading, error] = useList(latestRef);
     const [items, setItems] = React.useState([]);
