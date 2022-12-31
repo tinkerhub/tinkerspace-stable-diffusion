@@ -32,3 +32,6 @@ yarn-error.log*
 .vercel
 
 /server/service-account.json
+
+# pnpm lock
+pnpm-lock.yaml
