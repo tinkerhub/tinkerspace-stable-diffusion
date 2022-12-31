@@ -8,7 +8,7 @@ export default function Sidebar() {
       <img src='/logo.png' alt='' className='w-5/6' />
 
       <div>
-        <h1 className='text-xl font-semibold text-[#212121]'>In Queue</h1>
+        <h1 className='text-xl font-semibold text-[#212121]'>Imagination Queue</h1>
         {loading && <p className='mt-6 text-lg'>Loading ...</p>}
         {error && <p className='mt-6 text-lg'>Error</p>}
         {items &&
@@ -16,7 +16,7 @@ export default function Sidebar() {
             if (idx > 2) return null;
             return (
               <div key={idx} className='mt-6'>
-                <h2 className='text-lg font-bold text-[#212121]'>PSBots</h2>
+                {/* <h2 className='text-lg font-bold text-[#212121]'>PSBots</h2> */}
                 <p className='mt-3 text-[#212121] opacity-80'>{item.text}</p>
                 <div className='mt-3 flex items-center rounded-full py-1 px-3 border-2 w-fit border-[#828282]'>
                   <div
@@ -40,7 +40,10 @@ export default function Sidebar() {
       </div>
 
       <div className='mt-6 w-full h-0.5 bg-[#BDBDBD]' />
-      <img src='/qr.svg' />
+      <div className='mt-6 text-center'>
+        <img src='/qr-plain.svg' style={{ width: '' }} alt='' />
+        <span className='text-xl font-semibold text-[#212121]'>Scan QR and share your imagination</span>
+      </div>
     </div>
   );
 }
