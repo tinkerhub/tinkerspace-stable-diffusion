@@ -1,13 +1,13 @@
 import { ref, orderByChild, limitToLast, query, equalTo } from 'firebase/database';
 import { useList, useListVals } from 'react-firebase-hooks/database';
 import React, { use, useEffect,useState } from 'react'
-import { database } from '@lib/firebase';
+import { queueRef } from '@lib/firebase';
 
 export function useItems({
     limit = 6,
 }) {
     const latestRef = query(
-        ref(database, '_queue'),
+        queueRef,
         orderByChild('completed_at'),
         limitToLast(limit)
     );
@@ -33,7 +33,7 @@ export function useRecentImages() {
 
 export function useRecentQueue() {
     const latestRef = query(
-        ref(database, '_queue'),
+        queueRef,
         orderByChild('timestamp'),
         limitToLast(6)
     );
@@ -58,7 +58,6 @@ export function useLatestItem() {
     useEffect(() => {
         if (items.length > 0) {
             setItem(items[0]);
-
         }
     }, [items]);
     return [item, loading, error];
