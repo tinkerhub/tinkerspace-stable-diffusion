@@ -17,52 +17,55 @@ admin.initializeApp({
 });
 
 var db = admin.database();
-var ref = db.ref("_queue");
+var queueRef = db.ref("queue");
+var readyRef = db.ref("ready")
+var completedRef = db.ref("completed")
 
 // Read all values where status is pending
-ref.orderByChild("status")
+queueRef.orderByChild("status")
     .equalTo("pending")
     .on("value", function (snapshot) {
         // Set status to processing and initiate generation
         snapshot.forEach(async function (childSnapshot) {
             childSnapshot.ref.update({ status: "processing" });
             const url = await generateImage(childSnapshot.val().text);
-            moveToProcessed(childSnapshot,url)
+            childSnapshot.ref.update({ status: "ready" });
+            moveToReady(childSnapshot,url)
         });
     });
 
-async function moveToProcessed(newEntry,url){
-    await newEntry.ref.update({
-        status: "processed",
+async function moveToReady(newEntry,url){
+    await readyRef.push({
+        ...newEntry.val(),
+        keyInQueue: newEntry.key,
+        status: "ready",
         url,
-        completed_at: admin.database.ServerValue.TIMESTAMP
+        completed_at: Date.now() // Do not use server timestamp here, because that will cause on("value") to be called multiple times for the same entry
     })
-    const snapshot = await newEntry.ref.once('value')
-    updateExpiryAt(snapshot)
 }
-
-async function updateExpiryAt(newEntry) {
-    const newEntryCompletedTime = newEntry.val().completed_at;
-  
-    const snapshot = await ref.orderByChild("expiry_at")
-      .startAt(newEntryCompletedTime)
-      .limitToLast(1)
-      .once('value');
-  
-    if (!snapshot.exists()) {
-      await newEntry.ref.update({
-        expiry_at: newEntryCompletedTime + TIME_TO_SHOW_AN_IMAGE_MS
-      });
-      return;
-    }
-  
-    snapshot.forEach(async function (childSnapshot) {
-      const latestExpiryAt = childSnapshot.val().expiry_at;
-      await newEntry.ref.update({
-        expiry_at: latestExpiryAt + TIME_TO_SHOW_AN_IMAGE_MS
-      });
+    
+readyRef.orderByChild("completed_at")
+    .limitToFirst(1)
+    .on("value",function(snapshot){
+        if(!snapshot.exists()) return;
+        snapshot.forEach(function(childSnapshot){
+            moveToCompleted(childSnapshot)
+            setTimeout(function(){
+                childSnapshot.ref.remove()
+            },TIME_TO_SHOW_AN_IMAGE_MS)
+        })
     });
-  }
+
+async function moveToCompleted(newEntry){
+    const refToEntryInQueue = newEntry.val().keyInQueue
+    if(refToEntryInQueue){
+        queueRef.child(refToEntryInQueue).remove()
+    }
+    completedRef.push({
+        ...newEntry.val(),
+        status: "completed",
+    })
+}
 
 async function generateImage(prompt) {
     const modelParameters = {
