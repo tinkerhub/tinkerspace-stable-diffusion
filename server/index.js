@@ -17,9 +17,9 @@ admin.initializeApp({
 });
 
 var db = admin.database();
-var queueRef = db.ref("_queue");
-var readyRef = db.ref("_ready")
-var completedRef = db.ref("_completed")
+var queueRef = db.ref("queue");
+var readyRef = db.ref("ready")
+var completedRef = db.ref("completed")
 
 // Read all values where status is pending
 queueRef.orderByChild("status")
