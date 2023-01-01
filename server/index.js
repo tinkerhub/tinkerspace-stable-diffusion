@@ -67,10 +67,10 @@ async function updateExpiryAt(newEntry) {
 async function generateImage(prompt) {
     const modelParameters = {
         prompt,
-        num_inference_steps: 50,
+        num_inference_steps: 100,
         guidance_scale: 9,
-        height: 512,
-        width: 512,
+        height: 1024,
+        width: 1024,
         seed: Math.floor(Math.random() * 100000),
     };
 
