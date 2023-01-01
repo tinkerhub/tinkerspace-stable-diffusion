@@ -34,7 +34,7 @@ export function useRecentImages() {
 export function useRecentQueue() {
     const [items, loading, error] = useListVals(query(
         queueRef,
-        orderByChild('timestamp'),
+        orderByChild('created_at'),
         limitToFirst(6)
     ));
     return [items, loading, error];
