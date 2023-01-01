@@ -21,19 +21,19 @@ var db = admin.database();
 var queueRef = db.ref("queue");
 var readyRef = db.ref("ready")
 var completedRef = db.ref("completed");
-// const configRef = db.ref("config")
-
+const configRef = db.ref("config")
 // Read all values where status is pending
 queueRef.orderByChild("status")
     .equalTo("pending")
     .on("value", function (snapshot) {
         // Set status to processing and initiate generation
-        // console.log(`Got ${snapshot.length} to process`);
+        console.log(`Got ${snapshot.numChildren()} to process`);
         snapshot.forEach(async function (childSnapshot) {
-            childSnapshot.ref.update({ status: "processing" });
+            configRef.child("totalCount").set(admin.database.ServerValue.increment(1));
+            childSnapshot.ref.update({ status: "processing", processing_started_at: Date.now() });
             const url = await generateImage(childSnapshot.val().text);
-            childSnapshot.ref.update({ status: "ready" });
-            await moveToReady(childSnapshot,url)
+            childSnapshot.ref.update({ status: "ready", processing_completed_at: Date.now() });
+            await moveToReady(childSnapshot,url);
         });
     });
 
