@@ -35,3 +35,5 @@ yarn-error.log*
 
 # pnpm lock
 pnpm-lock.yaml
+.env
+service-account.json

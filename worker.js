@@ -1,36 +1,39 @@
+require('dotenv').config()
 const fs = require("fs");
 const banana = require("@banana-dev/banana-dev");
 const { v4: uuidv4 } = require("uuid");
 
 var admin = require("firebase-admin");
 var serviceAccount = require("./service-account.json");
+const { firestore } = require('firebase-admin');
 
-const apiKey = "75ee3281-c789-4052-81a0-3362fd2d5aae";
-const modelKey = "45f73f92-132a-4fb3-ae91-4fb535610f02";
+const apiKey = process.env.BANANA_API_KEY;
+const modelKey = process.env.BANANA_MODEL_KEY;
 const TIME_TO_SHOW_AN_IMAGE_MS = 15 * 1000;
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
-    databaseURL:
-        "https://tinkerspace-stable-diffusion-default-rtdb.asia-southeast1.firebasedatabase.app",
-    storageBucket: "tinkerspace-stable-diffusion.appspot.com",
+    databaseURL:process.env.FIREBASE_DATABASE_URL,
+    storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
 });
 
 var db = admin.database();
 var queueRef = db.ref("queue");
 var readyRef = db.ref("ready")
-var completedRef = db.ref("completed")
+var completedRef = db.ref("completed");
+// const configRef = db.ref("config")
 
 // Read all values where status is pending
 queueRef.orderByChild("status")
     .equalTo("pending")
     .on("value", function (snapshot) {
         // Set status to processing and initiate generation
+        // console.log(`Got ${snapshot.length} to process`);
         snapshot.forEach(async function (childSnapshot) {
             childSnapshot.ref.update({ status: "processing" });
             const url = await generateImage(childSnapshot.val().text);
             childSnapshot.ref.update({ status: "ready" });
-            moveToReady(childSnapshot,url)
+            await moveToReady(childSnapshot,url)
         });
     });
 
