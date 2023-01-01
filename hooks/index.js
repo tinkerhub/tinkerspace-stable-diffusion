@@ -3,7 +3,7 @@ import { useList, useListVals } from 'react-firebase-hooks/database';
 import React, { use, useEffect, useState } from 'react'
 import { queueRef, completedRef } from '@lib/firebase';
 
-export function completedItems({
+export function useCompletedItems({
     limit = 6,
 }) {
     const latestRef = query(
@@ -16,7 +16,7 @@ export function completedItems({
 }
 
 export function useRecentImages() {
-    const [items, loading, error] = completedItems({ limit: 8 });
+    const [items, loading, error] = useCompletedItems({ limit: 8 });
     const [images, setImages] = useState([]);
     useEffect(() => {
         if(items.length > 0) {
@@ -41,7 +41,7 @@ export function useRecentQueue() {
 }
 
 export function useLatestItem() {
-    const [items, loading, error] = completedItems({ limit: 1 })
+    const [items, loading, error] = useCompletedItems({ limit: 1 })
     const [item, setItem] = React.useState(null);
     useEffect(() => {
         if (items.length > 0) {
