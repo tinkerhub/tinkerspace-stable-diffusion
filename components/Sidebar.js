@@ -42,7 +42,7 @@ export default function Sidebar() {
                 <div className='mt-3 flex items-center rounded-full py-1 px-3 border-2 w-fit border-[#828282]'>
                   <div
                     className={`${
-                      (item.status == 'processed' ||
+                      (item.status == 'ready' ||
                         item.status === 'completed') &&
                       'bg-green-600'
                     } ${
