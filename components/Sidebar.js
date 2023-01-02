@@ -63,6 +63,7 @@ export default function Sidebar() {
       )}
 
       <div className='mt-6 text-center'>
+      <span className='text-xl text-[#212121]'>Powered by Stable Diffusion</span>
         <img src='/qr-plain.svg' style={{ width: '' }} alt='' />
         <span className='text-xl font-semibold text-[#212121]'>Scan QR and share your imagination</span>
       </div>

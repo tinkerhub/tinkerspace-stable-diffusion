@@ -16,7 +16,7 @@ export default function ImageSlide() {
             )}
             {latestItem && (
                 <div className='absolute w-full bottom-0 p-5 bg-black bg-opacity-80'>
-                    <p className='text-white text-lg'>{latestItem?.text}</p>
+                    <p className='text-white text-xl'>{latestItem?.text}</p>
                 </div>
             )}
         </div>
