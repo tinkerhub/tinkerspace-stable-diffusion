@@ -16,7 +16,8 @@ export default function ImageSlide() {
             )}
             {latestItem && (
                 <div className='absolute w-full bottom-0 p-5 bg-black bg-opacity-80'>
-                    <p className='text-white text-xl'>{latestItem?.text}</p>
+                    {/* Make the text of size 60px in Tailwind*/}
+                    <p className='text-white text-3xl'>{latestItem?.text}</p>
                 </div>
             )}
         </div>
