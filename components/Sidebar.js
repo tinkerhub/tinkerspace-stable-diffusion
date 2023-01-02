@@ -26,8 +26,9 @@ export default function Sidebar() {
     <div className='flex flex-col justify-between w-[30%] h-screen p-10 bg-[#E0E0E0]'>
       <img src='/logo.png' alt='' className='w-5/6' />
 
+      {items && items.length > 0 && (
       <div>
-        <h1 className='text-xl mt-5 font-semibold text-[#212121]'>Imagination Queue</h1>
+        <h1 className='text-xl mt-5 font-semibold text-[#212121]'>Upcoming</h1>
         {loading && <p className='mt-6 text-lg'>Loading ...</p>}
         {error && <p className='mt-6 text-lg'>Error</p>}
         {items &&
@@ -59,8 +60,8 @@ export default function Sidebar() {
             );
           })}
       </div>
+      )}
 
-      <div className='mt-6 w-full h-0.5 bg-[#BDBDBD]' />
       <div className='mt-6 text-center'>
         <img src='/qr-plain.svg' style={{ width: '' }} alt='' />
         <span className='text-xl font-semibold text-[#212121]'>Scan QR and share your imagination</span>
