@@ -5,7 +5,7 @@ import { useRecentImages } from "@hooks/index";
  * @param {*} param { interval = milliseconds } default 20 seconds
  * @returns 
  */
-const ImageAutoSlider = ({ interval = 20000 }) => {
+const ImageAutoSlider = ({ interval = 10000 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [items, loading, error] = useRecentImages({ limit: 30 });
   useEffect(() => {
@@ -27,7 +27,7 @@ const ImageAutoSlider = ({ interval = 20000 }) => {
           />
           <div className="absolute w-full bottom-0 p-5 bg-black bg-opacity-80">
             {/* Make the text of size 60px in Tailwind*/}
-            <p className="text-white text-3xl">{items[currentIndex]?.text}</p>
+            <p className="text-white text-4xl">{items[currentIndex]?.text}</p>
           </div>
         </>
       )}

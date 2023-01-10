@@ -2,7 +2,7 @@ import { useLatestItem } from "@hooks/index";
 import React, { useEffect, useState } from "react";
 import ImageAutoSlider from "@components/ImageAutoSlider";
 
-const SHOW_IMAGE_SLIDER_AFTER = 5; // minutes
+const SHOW_IMAGE_SLIDER_AFTER = 1; // minutes
 
 /**
  *  Function to check if the image slider should be shown
@@ -54,7 +54,7 @@ export default function ImageSlide() {
       {latestItem && (
         <div className="absolute w-full bottom-0 p-5 bg-black bg-opacity-80">
           {/* Make the text of size 60px in Tailwind*/}
-          <p className="text-white text-3xl">{latestItem?.text}</p>
+          <p className="text-white text-4xl">{latestItem?.text}</p>
         </div>
       )}
     </div>
