@@ -32,6 +32,13 @@ queueRef.orderByChild("status")
             configRef.child("totalCount").set(admin.database.ServerValue.increment(1));
             childSnapshot.ref.update({ status: "processing", processing_started_at: Date.now() });
             const url = await generateImage(childSnapshot.val().text);
+
+            if (!url) {
+                // If it fails, just remove the entry
+                childSnapshot.ref.remove();
+                return;
+            }
+
             childSnapshot.ref.update({ status: "ready", processing_completed_at: Date.now() });
             await moveToReady(childSnapshot,url);
         });
@@ -81,7 +88,15 @@ async function generateImage(prompt) {
     };
 
     console.log("Generating image...");
-    const out = await banana.run(apiKey, modelKey, modelParameters);
+
+    let out;
+
+    try {
+        out = await banana.run(apiKey, modelKey, modelParameters);
+    } catch (e) {
+        console.error("Error generating image", e);
+        return null;
+    }
 
     if (out?.modelOutputs?.[0]?.image_base64) {
         // Upload file to Firebase Storage
@@ -110,4 +125,3 @@ async function generateImage(prompt) {
     }
 }
 
-// generateImage("Someone crazy looking at the sky");
