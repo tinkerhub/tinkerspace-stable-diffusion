@@ -44,6 +44,21 @@ queueRef.orderByChild("status")
         });
     });
 
+queueRef.orderByChild("status")
+    .equalTo("processing")
+    .on("value", function (snapshot) {
+        const currentTime = Date.now();
+        const timeLimit = 15 * 60 * 1000; // 15 minutes in milliseconds
+
+        snapshot.forEach(function (childSnapshot) {
+            const processing_start_at = childSnapshot.val().processing_started_at;
+            if (currentTime - processing_start_at > timeLimit) {
+                // Remove the record if processing started more than 15 minutes ago
+                childSnapshot.ref.remove();
+            }
+        });
+    });
+
 async function moveToReady(newEntry,url){
     await readyRef.push({
         ...newEntry.val(),
