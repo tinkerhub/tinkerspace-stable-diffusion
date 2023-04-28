@@ -95,10 +95,10 @@ async function moveToCompleted(newEntry){
 async function generateImage(prompt) {
     const modelParameters = {
         prompt,
-        num_inference_steps: 100,
-        guidance_scale: 9,
         height: 1024,
         width: 1024,
+        steps: 75,
+        guidance_scale: 7,
         seed: Math.floor(Math.random() * 100000),
     };
 
