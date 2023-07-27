@@ -1,14 +1,14 @@
 require('dotenv').config()
 const fs = require("fs");
-const banana = require("@banana-dev/banana-dev");
+const Replicate = require("replicate");
 const { v4: uuidv4 } = require("uuid");
 
 var admin = require("firebase-admin");
 var serviceAccount = require("./service-account.json");
 const { firestore } = require('firebase-admin');
 
-const apiKey = process.env.BANANA_API_KEY;
-const modelKey = process.env.BANANA_MODEL_KEY;
+const replicateToken = process.env.REPLICATE_API_TOKEN;
+
 const TIME_TO_SHOW_AN_IMAGE_MS = 15 * 1000;
 
 admin.initializeApp({
@@ -93,33 +93,49 @@ async function moveToCompleted(newEntry){
 }
 
 async function generateImage(prompt) {
+    const replicate = new Replicate({
+        auth: process.env.REPLICATE_API_TOKEN,
+    });
+
+    // https://replicate.com/stability-ai/sdxl
     const modelParameters = {
         prompt,
-        height: 768,
-        width: 768,
-        steps: 20,
-        guidance_scale: 9,
-        seed: Math.floor(Math.random() * 100000),
     };
 
     console.log("Generating image...");
 
-    let out;
+    let result;
 
     try {
-        out = await banana.run(apiKey, modelKey, modelParameters);
+        result = await replicate.run(
+            "stability-ai/sdxl:2b017d9b67edd2ee1401238df49d75da53c523f36e363881e057f5dc3ed3c5b2",
+            {
+              input: modelParameters
+            }
+        );
+
+        // Output comes as an image URL as the first result in an array
+        if (result && result[0]) {
+            return result[0];
+        } else {
+            return null;
+        }
+
     } catch (e) {
         console.error("Error generating image", e);
         return null;
     }
 
-    if (out?.modelOutputs?.[0]?.image_base64) {
+    /* 
+    // This was originally used when we were getting the file as base64. We might have to re-use this if
+    // replicate deletes the generated images after a while
+    if (result?.output) {
         // Upload file to Firebase Storage
         const bucket = admin.storage().bucket();
         const filename = `${uuidv4()}.png`;
         const file = bucket.file(filename);
 
-        const buffer = Buffer.from(out.modelOutputs[0].image_base64, "base64");
+        const buffer = Buffer.from(result?.output, "base64");
 
         // Set the image as public and get public path
         await file.save(buffer, {
@@ -138,5 +154,5 @@ async function generateImage(prompt) {
         console.error("No image generated");
         return null;
     }
+    */
 }
-
