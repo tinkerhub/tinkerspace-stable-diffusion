@@ -2,7 +2,7 @@ require('dotenv').config()
 const fs = require("fs");
 const Replicate = require("replicate");
 const { v4: uuidv4 } = require("uuid");
-
+const axios = require("axios");
 var admin = require("firebase-admin");
 var serviceAccount = require("./service-account.json");
 const { firestore } = require('firebase-admin');
@@ -104,10 +104,10 @@ async function generateImage(prompt) {
 
     console.log("Generating image...");
 
-    let result;
+    let imageUrl;
 
     try {
-        result = await replicate.run(
+        const result = await replicate.run(
             "stability-ai/sdxl:2b017d9b67edd2ee1401238df49d75da53c523f36e363881e057f5dc3ed3c5b2",
             {
               input: modelParameters
@@ -116,26 +116,28 @@ async function generateImage(prompt) {
 
         // Output comes as an image URL as the first result in an array
         if (result && result[0]) {
-            return result[0];
+            imageUrl = result[0];
         } else {
+            console.error("No image generated");
             return null;
         }
-
     } catch (e) {
         console.error("Error generating image", e);
         return null;
     }
 
-    /* 
-    // This was originally used when we were getting the file as base64. We might have to re-use this if
-    // replicate deletes the generated images after a while
-    if (result?.output) {
+    if (imageUrl) {
+        // Download the file from this URL and upload to Firebase Storage
+        const result = await axios.get(imageUrl, {
+            responseType: "arraybuffer",
+        });
+
         // Upload file to Firebase Storage
         const bucket = admin.storage().bucket();
         const filename = `${uuidv4()}.png`;
         const file = bucket.file(filename);
 
-        const buffer = Buffer.from(result?.output, "base64");
+        const buffer = Buffer.from(result.data, "binary");
 
         // Set the image as public and get public path
         await file.save(buffer, {
@@ -154,5 +156,4 @@ async function generateImage(prompt) {
         console.error("No image generated");
         return null;
     }
-    */
 }
